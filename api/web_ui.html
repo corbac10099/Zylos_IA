@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZYLOS AI — Interface Locale</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Orbitron:wght@400;700;900&display=swap');
+
+  :root {
+    --bg-deep:     #050508;
+    --bg-panel:    #0c0c12;
+    --bg-card:     #121218;
+    --bg-input:    #0a0a0f;
+    --accent:      #00e5a0;
+    --accent-dim:  #00a06d;
+    --accent-glow: rgba(0, 229, 160, 0.15);
+    --accent2:     #6c63ff;
+    --accent2-dim: rgba(108, 99, 255, 0.3);
+    --text:        #d8dde6;
+    --text-dim:    #6b7280;
+    --text-bright: #f0f4ff;
+    --border:      rgba(255,255,255,0.07);
+    --border-acc:  rgba(0, 229, 160, 0.3);
+    --err:         #ff5555;
+    --warn:        #f59e0b;
+    --radius:      8px;
+    --shadow:      0 0 30px rgba(0,229,160,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg-deep);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-size: 13px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.3em;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-shadow: 0 0 20px var(--accent), 0 0 40px rgba(0,229,160,0.4);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--bg-card);
+    transition: all 0.3s;
+  }
+
+  .status-badge.ready {
+    border-color: var(--border-acc);
+    color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    transition: background 0.3s;
+  }
+
+  .status-badge.ready .status-dot {
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  /* ── LAYOUT ── */
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 240px;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 14px;
+    gap: 16px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar-section { display: flex; flex-direction: column; gap: 6px; }
+  .sidebar-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    padding: 0 4px;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  .info-key { color: var(--text-dim); font-size: 11px; }
+  .info-val { color: var(--text-bright); font-size: 11px; font-weight: 600; }
+  .info-val.green { color: var(--accent); }
+  .info-val.yellow { color: var(--warn); }
+  .info-val.red { color: var(--err); }
+
+  .metric-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  .metric-name { font-size: 10px; color: var(--text-dim); }
+  .metric-value { font-size: 16px; font-weight: 600; color: var(--accent); font-family: 'Orbitron', sans-serif; }
+  .metric-sub { font-size: 10px; color: var(--text-dim); }
+
+  .sidebar-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: left;
+  }
+
+  .sidebar-btn:hover {
+    border-color: var(--border-acc);
+    color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  .sidebar-btn.danger:hover {
+    border-color: var(--err);
+    color: var(--err);
+    background: rgba(255,85,85,0.1);
+  }
+
+  /* ── CHAT AREA ── */
+  .chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-track { background: transparent; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── WELCOME ── */
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 16px;
+    opacity: 0.6;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .welcome-logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3em;
+    font-weight: 900;
+    color: var(--accent);
+    text-shadow: 0 0 40px rgba(0,229,160,0.5);
+    animation: glow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 20px rgba(0,229,160,0.3); }
+    to   { text-shadow: 0 0 60px rgba(0,229,160,0.7), 0 0 100px rgba(0,229,160,0.3); }
+  }
+
+  .welcome p { color: var(--text-dim); font-size: 12px; }
+
+  .welcome-hints {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .hint-chip {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .hint-chip:hover {
+    border-color: var(--border-acc);
+    color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  /* ── MESSAGES ── */
+  .msg {
+    display: flex;
+    gap: 12px;
+    animation: msgIn 0.3s ease;
+  }
+
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg-user { flex-direction: row-reverse; }
+
+  .msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+
+  .msg-user .msg-avatar {
+    background: var(--accent2-dim);
+    border-color: rgba(108,99,255,0.4);
+  }
+
+  .msg-bot .msg-avatar {
+    background: var(--accent-glow);
+    border-color: var(--border-acc);
+  }
+
+  .msg-content { max-width: 75%; display: flex; flex-direction: column; gap: 4px; }
+  .msg-user .msg-content { align-items: flex-end; }
+
+  .msg-bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    line-height: 1.6;
+    word-break: break-word;
+    white-space: pre-wrap;
+    font-size: 13px;
+  }
+
+  .msg-user .msg-bubble {
+    background: var(--accent2-dim);
+    border: 1px solid rgba(108,99,255,0.4);
+    color: var(--text-bright);
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg-bot .msg-bubble {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg-meta {
+    font-size: 10px;
+    color: var(--text-dim);
+    padding: 0 4px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .msg-tag {
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: var(--accent-glow);
+    color: var(--accent);
+    font-size: 9px;
+    border: 1px solid var(--border-acc);
+  }
+
+  /* ── REASONING BOX ── */
+  .reasoning-box {
+    background: rgba(108,99,255,0.08);
+    border: 1px solid rgba(108,99,255,0.25);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font-size: 11px;
+    color: #9d97ff;
+    margin-top: 4px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .reasoning-content { display: none; margin-top: 6px; color: var(--text-dim); white-space: pre-wrap; }
+  .reasoning-box.open .reasoning-content { display: block; }
+
+  /* ── TYPING INDICATOR ── */
+  .typing-bubble {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    border-bottom-left-radius: 4px;
+  }
+
+  .typing-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: typingDot 1.2s ease-in-out infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typingDot {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30%            { transform: translateY(-6px); opacity: 1; }
+  }
+
+  /* ── INPUT AREA ── */
+  .input-area {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-panel);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .input-wrapper {
+    flex: 1;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.2s;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-wrapper:focus-within {
+    border-color: var(--border-acc);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+  }
+
+  textarea#inp {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-bright);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 10px 14px;
+    resize: none;
+    min-height: 42px;
+    max-height: 120px;
+    line-height: 1.5;
+  }
+
+  textarea#inp::placeholder { color: var(--text-dim); }
+
+  .send-btn {
+    padding: 10px 18px;
+    background: var(--accent);
+    color: var(--bg-deep);
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 1px;
+    height: 42px;
+  }
+
+  .send-btn:hover { background: #00ffb0; transform: translateY(-1px); }
+  .send-btn:active { transform: translateY(0); }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .input-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-dim);
+    padding: 0 2px;
+  }
+
+  .input-options { display: flex; gap: 12px; align-items: center; }
+
+  .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-dim);
+    transition: color 0.2s;
+  }
+
+  .toggle-label:hover { color: var(--text); }
+
+  .toggle-label input[type="checkbox"] {
+    appearance: none;
+    width: 28px; height: 15px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .toggle-label input[type="checkbox"]::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 9px; height: 9px;
+    background: var(--text-dim);
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+
+  .toggle-label input[type="checkbox"]:checked {
+    background: var(--accent-glow);
+    border-color: var(--border-acc);
+  }
+
+  .toggle-label input[type="checkbox"]:checked::after {
+    background: var(--accent);
+    left: 15px;
+  }
+
+  /* ── TOAST NOTIFICATIONS ── */
+  .toast-area {
+    position: fixed;
+    top: 60px;
+    right: 16px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toast {
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 12px;
+    color: var(--text);
+    animation: toastIn 0.3s ease;
+    max-width: 280px;
+  }
+
+  .toast.success { border-color: var(--border-acc); color: var(--accent); }
+  .toast.error   { border-color: rgba(255,85,85,0.4); color: var(--err); }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ── LOADING OVERLAY ── */
+  #loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-deep);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    transition: opacity 0.5s;
+  }
+
+  #loading-overlay.hidden { opacity: 0; pointer-events: none; }
+
+  .loading-logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5em;
+    font-weight: 900;
+    color: var(--accent);
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .loading-bar {
+    width: 200px;
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .loading-fill {
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: loadingSlide 1.5s ease-in-out infinite;
+  }
+
+  @keyframes loadingSlide {
+    from { transform: translateX(-200px); }
+    to   { transform: translateX(400px); }
+  }
+
+  .loading-status {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  /* ── SCROLLBAR GLOBAL ── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay">
+  <div class="loading-logo">ZYLOS</div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+  <div class="loading-status" id="loading-status">INITIALISATION...</div>
+</div>
+
+<!-- Toast area -->
+<div class="toast-area" id="toast-area"></div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    ZYLOS AI
+  </div>
+  <div class="header-right">
+    <div class="status-badge" id="status-badge">
+      <div class="status-dot"></div>
+      <span id="status-text">Connexion...</span>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Système</div>
+      <div class="info-row">
+        <span class="info-key">Modèle</span>
+        <span class="info-val green" id="sb-model">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Backend</span>
+        <span class="info-val" id="sb-backend">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">VRAM</span>
+        <span class="info-val" id="sb-vram">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Quant.</span>
+        <span class="info-val" id="sb-quant">—</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Session</div>
+      <div class="metric-bar">
+        <div class="metric-name">TOKENS GÉNÉRÉS</div>
+        <div class="metric-value" id="sb-tokens">0</div>
+        <div class="metric-sub">depuis le démarrage</div>
+      </div>
+      <div class="metric-bar">
+        <div class="metric-name">INTERACTIONS</div>
+        <div class="metric-value" id="sb-interactions">0</div>
+        <div class="metric-sub">cette session</div>
+      </div>
+      <div class="metric-bar">
+        <div class="metric-name">RAG HIT RATE</div>
+        <div class="metric-value" id="sb-rag">0%</div>
+        <div class="metric-sub">mémoire pertinente</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Actions</div>
+      <button class="sidebar-btn" onclick="resetHistory()">
+        <span>↺</span> Réinitialiser chat
+      </button>
+      <button class="sidebar-btn" onclick="refreshMetrics()">
+        <span>⟳</span> Actualiser métriques
+      </button>
+      <button class="sidebar-btn danger" onclick="clearMessages()">
+        <span>✕</span> Effacer affichage
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Apprentissage</div>
+      <div class="info-row">
+        <span class="info-key">Pages</span>
+        <span class="info-val" id="sb-pages">0</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Chunks</span>
+        <span class="info-val" id="sb-chunks">0</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Mémoire</span>
+        <span class="info-val" id="sb-memory">0</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Chat area -->
+  <div class="chat-area">
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-logo">Z</div>
+        <div>
+          <p style="font-family:'Orbitron',sans-serif;color:var(--text-bright);font-size:1.1em;margin-bottom:6px;">ZYLOS AI</p>
+          <p>IA locale non-Transformer — RWKV-7 + RAG</p>
+          <p style="margin-top:4px;">Fonctionne 100% hors-ligne</p>
+        </div>
+        <div class="welcome-hints">
+          <div class="hint-chip" onclick="useHint(this)">Qui es-tu ?</div>
+          <div class="hint-chip" onclick="useHint(this)">Comment fonctionne RWKV ?</div>
+          <div class="hint-chip" onclick="useHint(this)">Explique le machine learning</div>
+          <div class="hint-chip" onclick="useHint(this)">Écris du code Python</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <div class="input-wrapper">
+          <textarea id="inp" placeholder="Posez votre question à Zylos…" rows="1"
+            onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        </div>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">
+          <span>↑</span> Envoyer
+        </button>
+      </div>
+      <div class="input-meta">
+        <div class="input-options">
+          <label class="toggle-label">
+            <input type="checkbox" id="use-rag" checked>
+            Mémoire RAG
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="show-reasoning">
+            Raisonnement
+          </label>
+        </div>
+        <span id="char-count" style="color:var(--text-dim);">Entrée pour envoyer</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── ÉTAT ──────────────────────────────────────────────────────────────
+let modelReady = false;
+let isLoading  = false;
+let msgCount   = 0;
+let totalTokens = 0;
+let totalInter  = 0;
+let totalRagHits = 0;
+
+// ── INIT ──────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  checkStatus();
+  setInterval(refreshMetrics, 15000);
+  document.getElementById('inp').focus();
+});
+
+// ── STATUS ────────────────────────────────────────────────────────────
+async function checkStatus() {
+  try {
+    const r = await fetch('/api/status');
+    const d = await r.json();
+    updateStatus(d);
+    if (!d.ready) setTimeout(checkStatus, 2500);
+    else {
+      hideLoadingOverlay();
+    }
+  } catch(e) {
+    setStatus('Serveur indisponible', false);
+    setTimeout(checkStatus, 3000);
+  }
+}
+
+function updateStatus(d) {
+  const badge = document.getElementById('status-badge');
+  const text  = document.getElementById('status-text');
+
+  if (d.ready) {
+    modelReady = true;
+    badge.className = 'status-badge ready';
+    text.textContent = `${d.backend} · RWKV-${d.model_size}`;
+    document.getElementById('send-btn').disabled = false;
+    document.getElementById('sb-model').textContent = `RWKV-${d.model_size}`;
+    document.getElementById('sb-backend').textContent = d.backend;
+    document.getElementById('sb-vram').textContent = d.vram_mb > 0 ? `${d.vram_mb} Mo` : 'CPU';
+    document.getElementById('sb-vram').className = 'info-val ' + (d.vram_mb > 0 ? 'green' : 'yellow');
+    document.getElementById('sb-quant').textContent = d.quantization;
+    hideLoadingOverlay();
+  } else {
+    badge.className = 'status-badge';
+    text.textContent = 'Chargement du modèle…';
+    document.getElementById('send-btn').disabled = true;
+    document.getElementById('loading-status').textContent = 'CHARGEMENT DU MODÈLE…';
+  }
+}
+
+function hideLoadingOverlay() {
+  const ov = document.getElementById('loading-overlay');
+  ov.classList.add('hidden');
+  setTimeout(() => ov.style.display = 'none', 600);
+}
+
+async function refreshMetrics() {
+  try {
+    const r = await fetch('/api/metrics');
+    const d = await r.json();
+    const s = d.session || {};
+    const l = d.learning || {};
+    const m = d.memory || {};
+    const mo = d.model || {};
+    document.getElementById('sb-tokens').textContent = (mo.tokens_generated || 0).toLocaleString();
+    document.getElementById('sb-interactions').textContent = s.interactions || 0;
+    document.getElementById('sb-rag').textContent = ((m.rag_hit_rate || 0) * 100).toFixed(0) + '%';
+    document.getElementById('sb-pages').textContent = l.total_pages_scraped || 0;
+    document.getElementById('sb-chunks').textContent = l.total_chunks_indexed || 0;
+    document.getElementById('sb-memory').textContent = m.vector_entries || 0;
+  } catch(e) {}
+}
+
+// ── CHAT ──────────────────────────────────────────────────────────────
+async function sendMessage() {
+  const inp = document.getElementById('inp');
+  const msg = inp.value.trim();
+  if (!msg || isLoading || !modelReady) return;
+
+  inp.value = '';
+  autoResize(inp);
+  hideWelcome();
+  addUserMessage(msg);
+
+  const typingId = addTyping();
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+
+  try {
+    const useRag = document.getElementById('use-rag').checked;
+    const r = await fetch('/api/chat', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ message: msg, use_rag: useRag }),
+    });
+    const d = await r.json();
+    removeTyping(typingId);
+
+    if (d.error && !d.text) {
+      addBotMessage(`[Erreur : ${d.error}]`, d, true);
+    } else {
+      addBotMessage(d.text || '(réponse vide)', d, false);
+    }
+
+    totalInter++;
+    if (d.rag_hit) totalRagHits++;
+    document.getElementById('sb-interactions').textContent = totalInter;
+    document.getElementById('sb-rag').textContent =
+      totalInter > 0 ? ((totalRagHits / totalInter) * 100).toFixed(0) + '%' : '0%';
+
+  } catch(e) {
+    removeTyping(typingId);
+    addBotMessage(`[Erreur réseau : ${e.message}]`, {}, true);
+    toast('Erreur de connexion au serveur', 'error');
+  }
+
+  isLoading = false;
+  document.getElementById('send-btn').disabled = !modelReady;
+  inp.focus();
+}
+
+function addUserMessage(text) {
+  const msgs = document.getElementById('messages');
+  const div  = document.createElement('div');
+  div.className = 'msg msg-user';
+  div.innerHTML = `
+    <div class="msg-avatar">👤</div>
+    <div class="msg-content">
+      <div class="msg-bubble">${escHtml(text)}</div>
+    </div>`;
+  msgs.appendChild(div);
+  scrollBottom();
+}
+
+function addBotMessage(text, meta, isError) {
+  const msgs = document.getElementById('messages');
+  const div  = document.createElement('div');
+  div.className = 'msg msg-bot';
+
+  const showReasoning = document.getElementById('show-reasoning').checked;
+  let reasoningHtml = '';
+  if (meta.reasoning && showReasoning) {
+    reasoningHtml = `
+      <div class="reasoning-box" onclick="this.classList.toggle('open')">
+        🧠 Raisonnement interne (cliquer pour voir)
+        <div class="reasoning-content">${escHtml(meta.reasoning)}</div>
+      </div>`;
+  }
+
+  const latency  = meta.latency_ms ? `${meta.latency_ms.toFixed(0)}ms` : '';
+  const tokens   = meta.tokens_out ? `~${meta.tokens_out} tok` : '';
+  const ragTag   = meta.rag_hit ? '<span class="msg-tag">RAG</span>' : '';
+  const metaHtml = (latency || tokens || ragTag) ?
+    `<div class="msg-meta">${[latency, tokens].filter(Boolean).join(' · ')} ${ragTag}</div>` : '';
+
+  div.innerHTML = `
+    <div class="msg-avatar" style="${isError ? 'border-color:var(--err)' : ''}">⚡</div>
+    <div class="msg-content">
+      <div class="msg-bubble" style="${isError ? 'border-color:rgba(255,85,85,0.3);color:var(--err)' : ''}">${escHtml(text)}</div>
+      ${reasoningHtml}
+      ${metaHtml}
+    </div>`;
+
+  msgs.appendChild(div);
+  scrollBottom();
+  msgCount++;
+  totalTokens += meta.tokens_out || 0;
+  document.getElementById('sb-tokens').textContent = totalTokens.toLocaleString();
+}
+
+function addTyping() {
+  const msgs = document.getElementById('messages');
+  const div  = document.createElement('div');
+  const id   = 'typing-' + Date.now();
+  div.id = id;
+  div.className = 'msg msg-bot';
+  div.innerHTML = `
+    <div class="msg-avatar">⚡</div>
+    <div class="msg-content">
+      <div class="typing-bubble">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    </div>`;
+  msgs.appendChild(div);
+  scrollBottom();
+  return id;
+}
+
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────
+async function resetHistory() {
+  await fetch('/api/reset', { method: 'POST' });
+  clearMessages();
+  toast('Historique réinitialisé', 'success');
+  totalInter = 0;
+  totalRagHits = 0;
+}
+
+function clearMessages() {
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = '';
+  const welcome = document.createElement('div');
+  welcome.className = 'welcome';
+  welcome.id = 'welcome';
+  welcome.innerHTML = `
+    <div class="welcome-logo">Z</div>
+    <div><p style="font-family:'Orbitron',sans-serif;color:var(--text-bright);font-size:1.1em;margin-bottom:6px;">ZYLOS AI</p>
+    <p>Nouvelle conversation</p></div>`;
+  msgs.appendChild(welcome);
+  msgCount = 0;
+}
+
+function useHint(el) {
+  const inp = document.getElementById('inp');
+  inp.value = el.textContent;
+  inp.focus();
+  autoResize(inp);
+}
+
+function hideWelcome() {
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────────────
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  const len = el.value.length;
+  document.getElementById('char-count').textContent =
+    len > 0 ? `${len} car. · Shift+Entrée pour saut de ligne` : 'Entrée pour envoyer';
+}
+
+function scrollBottom() {
+  const msgs = document.getElementById('messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function escHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/\n/g, '<br>');
+}
+
+function toast(msg, type = 'info') {
+  const area  = document.getElementById('toast-area');
+  const div   = document.createElement('div');
+  div.className = `toast ${type}`;
+  div.textContent = msg;
+  area.appendChild(div);
+  setTimeout(() => div.remove(), 3000);
+}
+
+// Init send button state
+document.getElementById('send-btn').disabled = true;
+</script>
+</body>
+</html>
