@@ -1,0 +1,80 @@
+# ══════════════════════════════════════════════════════════════════════
+# ZYLOS AI — requirements.txt
+# Python 3.10+ requis
+# ══════════════════════════════════════════════════════════════════════
+
+# ── Core ML : PyTorch ─────────────────────────────────────────────────
+# Choisir UNE seule option selon ton matériel :
+
+# Option A : NVIDIA CUDA (recommandé NVIDIA)
+torch>=2.1.0
+torchvision>=0.16.0
+
+# Option B : AMD Windows — décommenter et commenter l'option A
+# torch==2.1.0         # version compatible torch-directml
+# torch-directml>=0.2.0
+
+# Option C : AMD Linux ROCm — installer via pip ROCm-wheel officiel
+# voir : https://pytorch.org/get-started/locally/ (ROCm)
+
+# ── Modèle RWKV ───────────────────────────────────────────────────────
+rwkv>=0.8.26            # package officiel RWKV (inférence + pipeline)
+
+# ── Téléchargement modèle ─────────────────────────────────────────────
+# NOUVEAU : huggingface_hub pour des téléchargements fiables avec reprise,
+# vérification d'intégrité et gestion du cache.
+# Évite les erreurs 404 causées par les URLs /tree/main/ (pages HTML).
+huggingface_hub>=0.21.0
+
+# ── Fine-tuning QLoRA ─────────────────────────────────────────────────
+peft>=0.9.0             # LoRA / QLoRA (HuggingFace PEFT)
+transformers>=4.38.0    # tokenizer HF + utilitaires training
+accelerate>=0.27.0      # gradient checkpointing, mixed precision
+
+# ── Mémoire vectorielle ───────────────────────────────────────────────
+chromadb>=0.4.22        # base vectorielle locale (RAG)
+
+# ── Web Scraping ──────────────────────────────────────────────────────
+trafilatura>=1.8.0      # extraction HTML → texte (principal)
+beautifulsoup4>=4.12.0  # fallback extraction HTML
+lxml>=5.1.0             # parser HTML rapide pour BS4
+requests>=2.31.0        # requêtes HTTP (optionnel, urllib utilisé par défaut)
+
+# ── Utilitaires scientifiques ─────────────────────────────────────────
+numpy>=1.24.0           # normalisation vecteurs, calculs embeddings
+
+# ── Aucune dépendance supplémentaire requise ──────────────────────────
+# Le projet utilise la stdlib Python pour :
+#   HTTP (urllib), JSON, pathlib, threading, hashlib, ast, py_compile, zipfile
+
+# ══════════════════════════════════════════════════════════════════════
+# INSTALLATION RAPIDE
+# ══════════════════════════════════════════════════════════════════════
+#
+# GPU NVIDIA :
+#   pip install -r requirements.txt
+#
+# GPU AMD Windows (RX 6700 XT etc.) :
+#   pip install torch==2.1.0 torch-directml>=0.2.0
+#   pip install rwkv huggingface_hub peft transformers accelerate chromadb trafilatura beautifulsoup4 lxml numpy
+#
+# GPU AMD Linux (ROCm) :
+#   pip install torch --index-url https://download.pytorch.org/whl/rocm5.7
+#   pip install -r requirements.txt
+#
+# CPU seulement :
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r requirements.txt
+#
+# ══════════════════════════════════════════════════════════════════════
+# OPTIONNELS
+# ══════════════════════════════════════════════════════════════════════
+
+# Accélération inférence (CUDA uniquement — pas AMD DirectML)
+# bitsandbytes>=0.43.0
+
+# Détection de langue plus précise
+# langdetect>=1.0.9
+
+# Monitoring GPU
+# gpustat>=1.1.1

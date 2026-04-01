@@ -1,0 +1,30 @@
+# Environnements virtuels
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VS Code
+.vscode/
+
+# Données lourdes / bases de données / modèles (NE PAS METTRE SUR GITHUB !)
+data/chroma_db/
+data/models/
+*.pth
+*.bin
+*.ckpt
+
+# Logs et données temporaires
+data/logs/
+*.log
+data/metrics.json
+data/backups/
+
+# Autres
+.env
+.DS_Store
